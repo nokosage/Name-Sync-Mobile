@@ -622,6 +622,7 @@
     postQREvent: function (e) {
       var name, subject, email, postID, threadID;
       
+      //console.log(e.detail);
       postID = e.detail.postId;
       threadID = e.detail.threadId;
       name = ($.getVal('persona.name') !== 'undefined') ? $.getVal('persona.name') : '';
@@ -661,7 +662,9 @@
         'dnt': 0
       };
       $.xhr('POST', location.protocol + '//namesync.org/namesync/sp.php', $POST, function (c) {
-        
+        window.setTimeout(function(){
+          Name_Sync.run();
+        }, 1000);
       }, $HEADERS);
     }
   };
