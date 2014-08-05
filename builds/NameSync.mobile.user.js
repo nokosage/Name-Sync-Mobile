@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Name Sync Mobile
-// @version      0.1.0
+// @version      1.0.0
 // @namespace    nokosage
 // @description  Enables names on 4chan. Does not require 4chan X.
 // @author       milkytiptoe
@@ -17,7 +17,7 @@
 // ==/UserScript==
 
 /*
-  Name Sync Mobile v0.1.0
+  Name Sync Mobile v1.0.0
   https://www.namesync.org/
 
   Developers:
@@ -32,7 +32,7 @@
   @license: https://raw.github.com/milkytiptoe/Name-Sync/master/license
 */
 
-(function () {
+function initNameSync() {
   var d, db, h, $, $$;
   d = document;
   db = document.body;
@@ -348,10 +348,10 @@
   
   g = {
     NAMESPACE: 'NameSync.Mobile.',
-    VERSION: '0.1.0',
+    VERSION: '1.0.0',
     posts: {}
   };
-  
+  /*
   Config = {
     main: {
       'Sync on /b/': [true, 'Enable sync on /b/.'],
@@ -364,7 +364,7 @@
       'Filter': [false]
     }
   };
-  
+  */
   Settings = {
     init: function() {
       var el, section, setting, stored, val, _i, _len, _ref, _ref1;
@@ -394,6 +394,17 @@
           'class': 'shortcut'
         }), 'NameSync');
         $.before(el, $('#settingsWindowLink'));
+        $.after($.tn(' / '), el);
+        $.on(el, 'click', function () {
+          Settings.click();
+        });
+      }
+      if ($('#settingsWindowLinkBot')) {
+        el = $.htm($.elm('a', {
+          'href': 'javascript:;',
+          'class': 'shortcut'
+        }), 'NameSync');
+        $.before(el, $('#settingsWindowLinkBot'));
         $.after($.tn(' / '), el);
         $.on(el, 'click', function () {
           Settings.click();
@@ -465,10 +476,10 @@
       $.setVal('persona.email', email);
     }
   };
-  
+  /*
   CSS = {
   };
-  
+  */
   NameSync = {
     ready: function () {
       var path,
@@ -723,4 +734,5 @@
   
   $.ready(NameSync.ready);
   
-}).call(this);
+}
+initNameSync();
