@@ -1,0 +1,9 @@
+{
+  "name": "namesync-mobile",
+  "title": "NameSync-Mobile",
+  "id": "jid1-PBBTSLipWMBRWQ",
+  "description": "Enables names on 4chan on forced Anonymous boards. Does not require Greasemonkey.",
+  "author": "nokosage",
+  "license": "MPL 2.0",
+  "version": "0.1.0"
+}

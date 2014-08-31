@@ -349,9 +349,10 @@ function initNameSync() {
   g = {
     NAMESPACE: 'NameSync.Mobile.',
     VERSION: '1.0.0',
+    checked: false,
     posts: {}
   };
-  /*
+  
   Config = {
     main: {
       'Sync on /b/': [true, 'Enable sync on /b/.'],
@@ -364,7 +365,7 @@ function initNameSync() {
       'Filter': [false]
     }
   };
-  */
+  
   Settings = {
     init: function() {
       var el, section, setting, stored, val, _i, _len, _ref, _ref1;
@@ -378,7 +379,10 @@ function initNameSync() {
           Set[setting] = stored === null ? val[0] : stored === 'true';
         }
       }
-      if ($('#boardNavMobile')) {
+	  Settings.createSettingsButtons();
+    },
+	createSettingsButtons: function() {
+	  if ($('#boardNavMobile')) {
         el = $.htm($.elm('a', {
           'href': 'javascript:;',
           'class': 'shortcut'
@@ -410,20 +414,20 @@ function initNameSync() {
           Settings.click();
         });
       }
-    },
+	},
     click: function() {
-      if ($('#NameSync_Settings', $('#absbot')))
+      if ($('#NameSync_Settings', document.body))
         Settings.close();
       else
         Settings.open();
     },
     open: function() {
       var el;
-      $html = '<div id="NameSync_Menu" class="reply" style="position: relative; max-height: 85%; width: 300px; left: 50%; margin-left: -150px; top: 10%;">'+
+      $html = '<div id="NameSync_Menu" class="reply" style="position: relative; max-height: 85%; width: 300px; left: 50%; margin-left: -150px; top: 10%; text-align: center;">'+
                 '<div style="font-size: 16pt; font-weight: bold; border-bottom: 1px solid rgba(0, 0, 0, 0.25); padding-bottom: 5px; margin-bottom: 10px;">NameSync Settings</div>'+
-                '<input type="text" id="NameSync_Name" placeholder="Name"/><a style="cursor: pointer; font-size: 10pt; text-decoration: none ! important;" id="clearNameSync_Name">[x]</a><br>'+
-                '<input type="text" id="NameSync_Email" placeholder="Email"/><a style="cursor: pointer; font-size: 10pt; text-decoration: none ! important;" id="clearNameSync_Email">[x]</a><br>'+
-                '<input type="text" id="NameSync_Subject" placeholder="Subject"/><a style="cursor: pointer; font-size: 10pt; text-decoration: none ! important;" id="clearNameSync_Subject">[x]</a>'+
+                '<input type="text" id="NameSync_Name" placeholder="Name" style="margin-left: 1px;"/><a style="cursor: pointer; font-size: 10pt; text-decoration: none ! important;" id="clearNameSync_Name">[x]</a><br>'+
+                '<input type="text" id="NameSync_Email" placeholder="Email" style="margin-left: 1px;"/><a style="cursor: pointer; font-size: 10pt; text-decoration: none ! important;" id="clearNameSync_Email">[x]</a><br>'+
+                '<input type="text" id="NameSync_Subject" placeholder="Subject" style="margin-left: 1px;"/><a style="cursor: pointer; font-size: 10pt; text-decoration: none ! important;" id="clearNameSync_Subject">[x]</a>'+
                 '<div style="margin:5px;">'+
                   '[ '+
                   '<a href="javascript:;">Reset Settings</a>'+
@@ -431,12 +435,20 @@ function initNameSync() {
                   '<a id="NameSync_Save" href="javascript:;">Save Settings</a>'+
                   ' ]'+
                 '</div>'+
+				        '<div style="font-weight: bold; border-bottom: 1px solid rgba(0, 0, 0, 0.25); margin-bottom: 10px; border-top: 1px solid rgba(0, 0, 0, 0.25); font-size: 13pt;">About</div>'+
+                '<div>'+
+                  '<a href="javascript:;" id="btnCheckUpdate" style="font-weight: bold;">Check for Update</a>'+
+                  '<div id="textCheckUpdate" style="min-height: 15px;"></div>'+
+                '</div>'+
+                '<div>4chan Name Sync Mobile v'+g.VERSION+'<br />'+
+                  '<a href="http://milkytiptoe.github.io/Name-Sync/">Website</a> | <a href="https://github.com/milkytiptoe/Name-Sync/wiki/Support">Support</a> | <a href="https://raw.github.com/milkytiptoe/Name-Sync/master/license">License</a> | <a href="#">Changelog</a> | <a href="#">Issues</a>'+
+                '</div>'+
               '</div>';
       $el = {
         'id': 'NameSync_Settings',
         'style': 'top:0;left:0;width:100%;height:100%;position:fixed;background-color:rgba(0, 0, 0, 0.25);'
       };
-      el = $.htm($.elm('div', $el, $('#absbot')), $html);
+      el = $.htm($.elm('div', $el, document.body), $html);
       
       if ($.getVal('persona.name') !== 'undefined') $('#NameSync_Name').value = $.getVal('persona.name');
       if ($.getVal('persona.email') !== 'undefined') $('#NameSync_Email').value = $.getVal('persona.email');
@@ -458,9 +470,12 @@ function initNameSync() {
       $.on($('#clearNameSync_Subject'), 'click', function(e) {
         $('#NameSync_Subject').value = '';
       });
+      $.on($('#btnCheckUpdate'), 'click', function(e) {
+        Sync.checkUpdate();
+      });
     },
     close: function() {
-      $.destroy($('#NameSync_Settings', $('#absbot')));
+      $.destroy($('#NameSync_Settings', document.body));
     },
     reset: function() {
       
@@ -504,8 +519,12 @@ function initNameSync() {
       $.on(d, '4chanThreadUpdated', function (e) {
         NameSync.run();
       });
-      $.on(d, '4chanQRPostSuccess', Sync.postQREvent);
-      $.on( $('#postForm').parentNode, 'submit', Sync.postFormEvent);
+      $.on(d, '4chanQRPostSuccess', function(e){
+	    Sync.postQREvent(e);
+	  });
+      $.on( $('#postForm').parentNode, 'submit', function() {
+		Sync.postFormEvent();
+	  });
       
       //$.on($('[value="Post"]'), 'click', Sync.postFormEvent);
       NameSync.run();
@@ -622,7 +641,7 @@ function initNameSync() {
         'b': g.board,
         't': g.thread
       };
-      $.xhr('GET', location.protocol + '//namesync.org/namesync/qp.php', $GET, function (c) {
+      $.xhr('GET', 'https://namesync.org/namesync/qp.php', $GET, function (c) {
         if (c.responseText !== '') {
           Names.namesync = $.JSON(c.responseText);
           Names.updateAllPosts();
@@ -632,10 +651,11 @@ function initNameSync() {
     },
     postQREvent: function (e) {
       var name, subject, email, postID, threadID;
-      
-      //console.log(e.detail);
-      postID = e.detail.postId;
-      threadID = e.detail.threadId;
+	  
+      //postID = e.detail.postId;
+      //threadID = e.detail.threadId;
+	  postID = Object.keys(window.wrappedJSObject.Parser.trackedReplies)[Object.keys(window.wrappedJSObject.Parser.trackedReplies).length-1].substr(2);
+	  threadID = g.thread;
       name = ($.getVal('persona.name') !== 'undefined') ? $.getVal('persona.name') : '';
       email = ($.getVal('persona.email') !== 'undefined') ? $.getVal('persona.email') : '';
       subject = ($.getVal('persona.subject') !== 'undefined') ? $.getVal('persona.subject') : '';
@@ -672,11 +692,30 @@ function initNameSync() {
         'e': email,
         'dnt': 0
       };
-      $.xhr('POST', location.protocol + '//namesync.org/namesync/sp.php', $POST, function (c) {
+      $.xhr('POST', 'https://namesync.org/namesync/sp.php', $POST, function (c) {
         window.setTimeout(function(){
-          Name_Sync.run();
+          NameSync.run();
         }, 1000);
       }, $HEADERS);
+    },
+    checkUpdate: function () {
+      if (!g.checked) {
+        $HEADERS = {
+          'X-Requested-With': '' + g.NAMESPACE + 'v' + g.VERSION
+        };
+        $.xhr('GET', 'https://namesync.org/mobile/v.php', null, function (c) {
+          var v;
+          v = $.JSON(c.responseText)['VERSION'];
+          if (g.VERSION !== v) {
+            $HTML = '<span style="color: red; font-weight: bold;">New Version Available:</span> <a href="https://namesync.org/mobile/" style="font-weight: bold;">Here</a>';
+            $.htm($('#textCheckUpdate'), $HTML);
+          } else {
+            $HTML = '<span style="color: green; font-weight: bold;">Up-to-date</span>';
+            $.htm($('#textCheckUpdate'), $HTML);
+          }
+          g.checked = true;
+        }, $HEADERS);
+      }
     }
   };
   
