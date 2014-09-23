@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Name Sync Mobile
-// @version      1.0.0
+// @version      1.1.1
 // @namespace    nokosage
 // @description  Enables names on 4chan. Does not require 4chan X.
 // @author       milkytiptoe
@@ -32,7 +32,7 @@
   @license: https://raw.github.com/milkytiptoe/Name-Sync/master/license
 */
 
-function initNameSync() {
+(function() {
   var d, db, h, $, $$;
   d = document;
   db = document.body;
@@ -348,7 +348,7 @@ function initNameSync() {
   
   g = {
     NAMESPACE: 'NameSync.Mobile.',
-    VERSION: '1.0.0',
+    VERSION: '1.1.1',
     checked: false,
     posts: {}
   };
@@ -379,11 +379,12 @@ function initNameSync() {
           Set[setting] = stored === null ? val[0] : stored === 'true';
         }
       }
-	  Settings.createSettingsButtons();
+	    Settings.createSettingsButtons();
     },
-	createSettingsButtons: function() {
-	  if ($('#boardNavMobile')) {
+	  createSettingsButtons: function() {
+	    if ($('#boardNavMobile') && !$('#namesync_button', $('#boardNavMobile'))) {
         el = $.htm($.elm('a', {
+          'id': 'namesync_button',
           'href': 'javascript:;',
           'class': 'shortcut'
         }), 'NameSync');
@@ -392,8 +393,9 @@ function initNameSync() {
           Settings.click();
         });
       }
-      if ($('#settingsWindowLink')) {
+      if ($('#settingsWindowLink') && !$('#namesync_button', $('#boardNavDesktop'))) {
         el = $.htm($.elm('a', {
+          'id': 'namesync_button',
           'href': 'javascript:;',
           'class': 'shortcut'
         }), 'NameSync');
@@ -403,8 +405,9 @@ function initNameSync() {
           Settings.click();
         });
       }
-      if ($('#settingsWindowLinkBot')) {
+      if ($('#settingsWindowLinkBot') && !$('#namesync_button', $('#boardNavMobileFoot'))) {
         el = $.htm($.elm('a', {
+          'id': 'namesync_button',
           'href': 'javascript:;',
           'class': 'shortcut'
         }), 'NameSync');
@@ -414,7 +417,7 @@ function initNameSync() {
           Settings.click();
         });
       }
-	},
+	  },
     click: function() {
       if ($('#NameSync_Settings', document.body))
         Settings.close();
@@ -424,25 +427,37 @@ function initNameSync() {
     open: function() {
       var el;
       $html = '<div id="NameSync_Menu" class="reply" style="position: relative; max-height: 85%; width: 300px; left: 50%; margin-left: -150px; top: 10%; text-align: center;">'+
-                '<div style="font-size: 16pt; font-weight: bold; border-bottom: 1px solid rgba(0, 0, 0, 0.25); padding-bottom: 5px; margin-bottom: 10px;">NameSync Settings</div>'+
-                '<input type="text" id="NameSync_Name" placeholder="Name" style="margin-left: 1px;"/><a style="cursor: pointer; font-size: 10pt; text-decoration: none ! important;" id="clearNameSync_Name">[x]</a><br>'+
-                '<input type="text" id="NameSync_Email" placeholder="Email" style="margin-left: 1px;"/><a style="cursor: pointer; font-size: 10pt; text-decoration: none ! important;" id="clearNameSync_Email">[x]</a><br>'+
-                '<input type="text" id="NameSync_Subject" placeholder="Subject" style="margin-left: 1px;"/><a style="cursor: pointer; font-size: 10pt; text-decoration: none ! important;" id="clearNameSync_Subject">[x]</a>'+
+                '<div style="font-weight: bold; padding-bottom: 5px; font-size: 18pt;">NameSync Settings</div>'+
+                '<fieldset>'+
+                  '<div>'+
+                    '<label style="text-decoration: underline; font-weight: bold;cursor: pointer;"><input type="checkbox" name="Tripfag Finder">Tripfag Finder</label><br />'+
+                    '<span class="description" style="font-style: italic; font-size: 9pt;">Enables functionality to find and mark threads.</span>'+
+                  '</div>'+
+                  '<legend style="font-weight: bold;">Main</legend>'+
+                '</fieldset>'+
+                '<fieldset>'+
+                  '<legend style="font-weight: bold;">Persona</legend>'+
+                  '<input type="text" id="NameSync_Name" placeholder="Name" style="margin-left: 1px;"/><a style="cursor: pointer; font-size: 10pt; text-decoration: none ! important;" id="clearNameSync_Name">[x]</a><br>'+
+                  '<input type="text" id="NameSync_Email" placeholder="Email" style="margin-left: 1px;"/><a style="cursor: pointer; font-size: 10pt; text-decoration: none ! important;" id="clearNameSync_Email">[x]</a><br>'+
+                  '<input type="text" id="NameSync_Subject" placeholder="Subject" style="margin-left: 1px;"/><a style="cursor: pointer; font-size: 10pt; text-decoration: none ! important;" id="clearNameSync_Subject">[x]</a>'+
+                '</fieldset>'+
                 '<div style="margin:5px;">'+
                   '[ '+
-                  '<a href="javascript:;">Reset Settings</a>'+
+                  '<a href="javascript:;">Reset</a>'+
                   ' / '+
-                  '<a id="NameSync_Save" href="javascript:;">Save Settings</a>'+
+                  '<a id="NameSync_Save" href="javascript:;">Save</a>'+
                   ' ]'+
                 '</div>'+
-				        '<div style="font-weight: bold; border-bottom: 1px solid rgba(0, 0, 0, 0.25); margin-bottom: 10px; border-top: 1px solid rgba(0, 0, 0, 0.25); font-size: 13pt;">About</div>'+
-                '<div>'+
-                  '<a href="javascript:;" id="btnCheckUpdate" style="font-weight: bold;">Check for Update</a>'+
-                  '<div id="textCheckUpdate" style="min-height: 15px;"></div>'+
-                '</div>'+
-                '<div>4chan Name Sync Mobile v'+g.VERSION+'<br />'+
-                  '<a href="http://milkytiptoe.github.io/Name-Sync/">Website</a> | <a href="https://github.com/milkytiptoe/Name-Sync/wiki/Support">Support</a> | <a href="https://raw.github.com/milkytiptoe/Name-Sync/master/license">License</a> | <a href="#">Changelog</a> | <a href="#">Issues</a>'+
-                '</div>'+
+                '<fieldset style="padding: 0px 0px 5px;">'+
+                  '<legend style="font-weight: bold;">About</legend>'+
+                  '<div>'+
+                    '<a href="javascript:;" id="btnCheckUpdate" style="font-weight: bold;">Check for Update</a>'+
+                    '<div id="textCheckUpdate" style="min-height: 15px;"></div>'+
+                  '</div>'+
+                  '<div>4chan Name Sync Mobile v'+g.VERSION+'<br />'+
+                    '<a href="http://milkytiptoe.github.io/Name-Sync/">Website</a> | <a href="https://github.com/milkytiptoe/Name-Sync/wiki/Support">Support</a> | <a href="https://raw.github.com/milkytiptoe/Name-Sync/master/license">License</a> | <a href="#">Changelog</a> | <a href="#">Issues</a>'+
+                  '</div>'+
+                '</fieldset>'+
               '</div>';
       $el = {
         'id': 'NameSync_Settings',
@@ -453,6 +468,7 @@ function initNameSync() {
       if ($.getVal('persona.name') !== 'undefined') $('#NameSync_Name').value = $.getVal('persona.name');
       if ($.getVal('persona.email') !== 'undefined') $('#NameSync_Email').value = $.getVal('persona.email');
       if ($.getVal('persona.subject') !== 'undefined') $('#NameSync_Subject').value = $.getVal('persona.subject');
+      if ($.getVal('main.tripfag_finder') === 'true') $.att($('[name="Tripfag Finder"]'), 'checked', 'true');
       
       $.on($('#NameSync_Settings'), 'click', function(e) {
         if (e.target.id === 'NameSync_Settings')
@@ -481,14 +497,19 @@ function initNameSync() {
       
     },
     save: function() {
-      var subject, name, email;
+      var subject, name, email, tripfag_finder;
       subject = $('#NameSync_Subject').value;
       name = $('#NameSync_Name').value;
       email = $('#NameSync_Email').value;
+      tripfag_finder = $('[name="Tripfag Finder"]:checked') ? true : false;
       
       $.setVal('persona.name', name);
       $.setVal('persona.subject', subject);
       $.setVal('persona.email', email);
+      $.setVal('main.tripfag_finder', tripfag_finder);
+      
+      if (!tripfag_finder && $('#finder_button', $('#boardNavMobile'))) $.destroy($('#finder_button', $('#boardNavMobile')));
+      if (tripfag_finder && !$('#finder_button', $('#boardNavMobile'))) Tripfag_Finder.init();
     }
   };
   /*
@@ -503,11 +524,12 @@ function initNameSync() {
       g.board = path[1];
       g.view = (_ref = path[2]) === 'thread' || _ref === 'catalog' ? path[2] : 'index';
       if (g.view !== 'thread') {
-        return ;
+        //return ;
       }
-      g.thread = $('.thread') .id.slice(1);
+      g.thread = $('.thread').id.slice(1);
       NameSync.init();
       Settings.init();
+      if ($.getVal('main.tripfag_finder') === 'true') Tripfag_Finder.init();
     },
     init: function () {
       if (g.view === 'catalog') {
@@ -654,8 +676,8 @@ function initNameSync() {
 	  
       //postID = e.detail.postId;
       //threadID = e.detail.threadId;
-	  postID = Object.keys(window.wrappedJSObject.Parser.trackedReplies)[Object.keys(window.wrappedJSObject.Parser.trackedReplies).length-1].substr(2);
-	  threadID = g.thread;
+      postID = Object.keys(window.wrappedJSObject.Parser.trackedReplies)[Object.keys(window.wrappedJSObject.Parser.trackedReplies).length-1].substr(2);
+      threadID = g.thread;
       name = ($.getVal('persona.name') !== 'undefined') ? $.getVal('persona.name') : '';
       email = ($.getVal('persona.email') !== 'undefined') ? $.getVal('persona.email') : '';
       subject = ($.getVal('persona.subject') !== 'undefined') ? $.getVal('persona.subject') : '';
@@ -771,7 +793,238 @@ function initNameSync() {
     return Post;
   })();
   
+  Tripfag_Finder = {
+    VERSION: '2.0.3',
+    init: function () {
+      Tripfag_Finder.createButtons();
+    },
+    createButtons: function() {
+	    if ($('#boardNavMobile') && !$('#finder_button', $('#boardNavMobile'))) {
+        el = $.htm($.elm('a', {
+          'id': 'finder_button',
+          'href': 'javascript:;',
+          'class': 'shortcut'
+        }), 'Finder');
+        $.before(el, $('#settingsWindowLinkMobile'));
+        $.on(el, 'click', function () {
+          Tripfag_Finder.click();
+        });
+      }
+      if ($('#settingsWindowLink') && !$('#finder_button', $('#boardNavDesktop'))) {
+        el = $.htm($.elm('a', {
+          'id': 'finder_button',
+          'href': 'javascript:;',
+          'class': 'shortcut'
+        }), 'Finder');
+        $.before(el, $('#settingsWindowLink'));
+        $.after($.tn(' / '), el);
+        $.on(el, 'click', function () {
+          Tripfag_Finder.click();
+        });
+      }
+      if ($('#settingsWindowLinkBot') && !$('#finder_button', $('#boardNavDesktopFoot'))) {
+        el = $.htm($.elm('a', {
+          'id': 'finder_button',
+          'href': 'javascript:;',
+          'class': 'shortcut'
+        }), 'Finder');
+        $.before(el, $('#settingsWindowLinkBot'));
+        $.after($.tn(' / '), el);
+        $.on(el, 'click', function () {
+          Tripfag_Finder.click();
+        });
+      }
+	  },
+    click: function () {
+      if ($('#Tripfag_Finder', document.body))
+        Tripfag_Finder.close();
+      else
+        Tripfag_Finder.open();
+    },
+    open: function () {
+      var el;
+      $html = '<div id="threadFinderContainer" class="reply" style="position: relative; max-height: 85%; width: 300px; left: 50%; margin-left: -150px; top: 10%; text-align: center;">'+
+                '<fieldset>'+
+                  '<legend style="font-weight: bold;">Threads</legend>'+
+                  '<div id="tf_threadWrapper"></div>'+
+                  '<div id="tf_online">Online Users: Waiting...</div>'+
+                  '<input type="button" value="Refresh">'+
+                  '<select id="tf_type">'+
+                    '<option value="animu">Animu</option>'+
+                    '<option value="draw">Draw</option>'+
+                    '<option value="gfur">Gfur</option>'+
+                    '<option value="pony">Pony</option>'+
+                    '<option value="sfur">Sfur</option>'+
+                    '<option value="trap">Trap</option>'+
+                    '<option value="loli">Loli</option>'+
+                    '<option value="shota">Shota</option>'+
+                    '<option value="ks">KS</option>'+
+                  '</select>'+
+                  '<input type="button" style="width: auto;" value="Mark">'+
+                  '<input type="button" style="width: auto;" value="Unmark">'+
+                '</fieldset>'+
+                '<fieldset id="tf_oppart" style="border-bottom: 0px none; border-left: 0px none; border-right: 0px none; padding: 0px 10px;">'+
+                  '<legend style="font-weight: bold; visibility: visible;"><a href="javascript:void(0);" title="Show options" class="tf_optionsLink">Options</a></legend>'+
+                '</fieldset>'+
+                '<fieldset id="tf_opfull" style="display: none;">'+
+                  '<legend style="font-weight: bold; visibility: visible;"><a href="javascript:void(0);" title="Show options" class="tf_optionsLink">Options</a></legend>'+
+                  '<fieldset id="tf_passwords">'+
+                    '<legend>Passwords</legend>'+
+                    '<label><input type="text" placeholder="Access Password" name="Password"></label>'+
+                    '<label><input type="text" placeholder="Admin Password" name="AdminPassword"></label>'+
+                  '</fieldset>'+
+                '<div style="margin:5px;">'+
+                  '[ <a id="tf_options_save" href="javascript:;">Save</a> ]'+
+                '</div>'+
+                '</fieldset>'+
+                '<div id="tf_notify" class="tfHidden"></div>'+
+                '<div id="tf_error" class="tfHidden"></div>'+
+              '</div>';
+      $el = {
+        'id': 'Tripfag_Finder',
+        'style': 'top:0;left:0;width:100%;height:100%;position:fixed;background-color:rgba(0, 0, 0, 0.25);'
+      };
+      el = $.htm($.elm('div', $el, document.body), $html);
+      
+      if ($.getVal('finder.password') !== 'undefined') $('[name="Password"]', $('#tf_opfull')).value = $.getVal('finder.password');
+      if ($.getVal('finder.admin_password') !== 'undefined') $('[name="AdminPassword"]', $('#tf_opfull')).value = $.getVal('finder.admin_password');
+      
+      $.on($('#Tripfag_Finder'), 'click', function(e) {
+        if (e.target.id === 'Tripfag_Finder')
+          Tripfag_Finder.close();;
+      });
+      $.on($('[value="Refresh"]', $('.threadFinderContainer')), 'click', function(e) {
+        Tripfag_Finder.updateThreads();
+      });
+      $.on($('[value="Mark"]', $('.threadFinderContainer')), 'click', function(e) {
+        Tripfag_Finder.markThread();
+      });
+      $.on($('[value="Unmark"]', $('.threadFinderContainer')), 'click', function(e) {
+        Tripfag_Finder.unmarkThread();
+      });
+      $.on($('.tf_optionsLink', $('#tf_oppart')), 'click', function(e) {
+        $.att($('#tf_oppart'), 'style', 'display: none;');
+        $.att($('#tf_opfull'), 'style', '');
+      });
+      $.on($('.tf_optionsLink', $('#tf_opfull')), 'click', function(e) {
+        $.att($('#tf_oppart'), 'style', 'border-bottom: 0px none; border-left: 0px none; border-right: 0px none; padding: 0px 10px;');
+        $.att($('#tf_opfull'), 'style', 'display: none;');
+      });
+      $.on($('#tf_options_save'), 'click', function(e) {
+        Tripfag_Finder.save();
+      });
+      Tripfag_Finder.updateThreads();
+    },
+    close: function () {
+      $.destroy($('#Tripfag_Finder', document.body));
+    },
+    updateThreads: function () {
+      var password, admin_password
+      $.att($.att($('[value="Refresh"]', $('.threadFinderContainer')), 'value', 'Loading...'), 'disabled', 'disabled');
+      if ($.getVal('finder.password') !== 'undefined') 
+        password = $.getVal('finder.password');
+      else
+        password = "null";
+      if ($.getVal('finder.admin_password') !== 'undefined') 
+        admin_password = $.getVal('finder.admin_password');
+      else
+        admin_password = "null";
+      $HEADERS = {
+        'X-Requested-With': '' + g.NAMESPACE + 'v' + g.VERSION
+      };
+      $POST = {
+        'a': 'get',
+        't': g.thread,
+        'p': password,
+        'ap': admin_password,
+        'v': Tripfag_Finder.VERSION
+      };
+      $.xhr('POST', 'https://api.b-stats.org/finder/api.php', $POST, function(c) {
+        var finder, threads;
+        $.htm($('#tf_threadWrapper'), '');
+        finder = $.JSON(c.responseText);
+        threads = finder['data'];
+        for (i = 0; i < threads.length; i++) {
+          var el;
+          $html = '<a href="/b/thread/'+threads[i]['thread']+'" class="tf_threadLink">'+threads[i]['type'].charAt(0).toUpperCase()+threads[i]['type'].slice(1)+': '+threads[i]['thread']+' ('+threads[i]['votes']+')</a>'+
+                  '<span class="tf_Counts"> (R: '+threads[i]['r']+' I: '+threads[i]['i']+')</span>'+
+                  '<info thread="'+threads[i]['thread']+'" type="'+threads[i]['type']+'"></info>';
+          if (finder['admin']) $html += ' <a href="javascript:;" class="tf_adminDelete">[x]</a>';
+          $el = {
+            'id': 'tf_thread',
+            'style': 'padding: 2px 0'
+          };
+          el = $.htm($.elm('div', $el, $('#tf_threadWrapper')), $html);
+          $.on(el, 'click', function(e) {
+            Tripfag_Finder.deleteThread($.att($('info', e.target.parentNode), 'thread'), $.att($('info', e.target.parentNode), 'type'));
+          });
+        }
+        $.htm($('#tf_online'), 'Online Users: '+finder['users']);
+        $.att($.att($('[value="Loading..."]', $('.threadFinderContainer')), 'value', 'Refresh'), 'disabled', '');
+      }, $HEADERS);
+    },
+    markThread: function () {
+      $.att($.att($('[value="Mark"]', $('.threadFinderContainer')), 'value', 'Mark'), 'disabled', 'disabled');
+      $HEADERS = {
+        'X-Requested-With': '' + g.NAMESPACE + 'v' + g.VERSION
+      };
+      $POST = {
+        'a': 'set',
+        't': g.thread,
+        'p': 'idiots',
+        'type': $('#tf_type').value,
+        'v': Tripfag_Finder.VERSION
+      };
+      $.xhr('POST', 'https://api.b-stats.org/finder/api.php', $POST, function(c) {
+        Tripfag_Finder.updateThreads();
+        $.att($.att($('[value="Mark"]', $('.threadFinderContainer')), 'value', 'Mark'), 'disabled', '');
+      }, $HEADERS);
+    },
+    unmarkThread: function () {
+      $.att($.att($('[value="Unmark"]', $('.threadFinderContainer')), 'value', 'Unmark'), 'disabled', 'disabled');
+      $HEADERS = {
+        'X-Requested-With': '' + g.NAMESPACE + 'v' + g.VERSION
+      };
+      $POST = {
+        'a': 'unset',
+        't': g.thread,
+        'p': 'idiots',
+        'v': Tripfag_Finder.VERSION
+      };
+      $.xhr('POST', 'https://api.b-stats.org/finder/api.php', $POST, function(c) {
+        Tripfag_Finder.updateThreads();
+        $.att($.att($('[value="Unmark"]', $('.threadFinderContainer')), 'value', 'Unmark'), 'disabled', '');
+      }, $HEADERS);
+    },
+    deleteThread: function (thread, type) {
+      var password, admin_password;
+      password = $.getVal('finder.password');
+      admin_password = $.getVal('finder.admin_password');
+      $HEADERS = {
+        'X-Requested-With': '' + g.NAMESPACE + 'v' + g.VERSION
+      };
+      $POST = {
+        'a': 'delete',
+        't': thread,
+        'y': type,
+        'p': password,
+        'password': admin_password,
+        'v': Tripfag_Finder.VERSION
+      };
+      $.xhr('POST', 'https://api.b-stats.org/finder/api.php', $POST, function(c) {
+        Tripfag_Finder.updateThreads();
+      }, $HEADERS);
+    },
+    save: function () {
+      var password, admin_password;
+      password = $('[name="Password"]', $('#tf_opfull')).value;
+      admin_password = $('[name="AdminPassword"]', $('#tf_opfull')).value;
+      
+      $.setVal('finder.password', password);
+      $.setVal('finder.admin_password', admin_password);
+    }
+  }
+  
   $.ready(NameSync.ready);
   
-}
-initNameSync();
+}).call(this);
