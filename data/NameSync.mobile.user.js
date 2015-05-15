@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Name Sync Mobile
-// @version      1.1.3
+// @version      1.2.0
 // @namespace    nokosage
 // @description  Enables names on 4chan. Does not require 4chan X.
 // @author       milkytiptoe
@@ -17,7 +17,7 @@
 // ==/UserScript==
 
 /*
-  Name Sync Mobile v1.1.3
+  Name Sync Mobile v1.2.0
   https://namesync.net/
 
   Developers:
@@ -348,7 +348,7 @@
   
   g = {
     NAMESPACE: 'NameSync.Mobile.',
-    VERSION: '1.1.3',
+    VERSION: '1.2.0',
     checked: false,
     posts: {}
   };
